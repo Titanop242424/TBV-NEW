@@ -25,7 +25,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Bot token from @BotFather
-BOT_TOKEN = "7828525928:AAEyxfC-kQU1s9tejGKsu4am0iSS8ifF8iI"
+BOT_TOKEN = "8488881878:AAHPaS-S4aQjUfYj0wBjsIjkNSorZ87AdRU"
 
 # YOUR ACTUAL DOMAIN
 YOUR_DOMAIN = "https://terabox-proxy.tera-by-titan.workers.dev"
@@ -33,13 +33,14 @@ PLAYER_URL = f"{YOUR_DOMAIN}/?surl={{surl}}"
 
 # Admin user IDs - REPLACE WITH YOUR ACTUAL TELEGRAM USER ID
 ADMIN_IDS = [7163028849]  # <--- CHANGE THIS TO YOUR TELEGRAM ID
-
+    
 # Data file paths
 USER_DATA_FILE = "user_data.json"
 FORCE_CHANNELS_FILE = "force_channels.json"
 
 # Supported Terabox domains
 SUPPORTED_DOMAINS = [
+    'teraboxurl.com',
     'terabox.com',
     '1024terabox.com',
     'teraboxapp.com',
@@ -309,11 +310,13 @@ def is_admin(user_id: int) -> bool:
 def extract_surl(text):
     """Extract surl from various Terabox URL formats"""
     patterns = [
+
         r'terabox\.com/s/([a-zA-Z0-9_\-]+)',
         r'1024terabox\.com/s/([a-zA-Z0-9_\-]+)',
         r'teraboxapp\.com/s/([a-zA-Z0-9_\-]+)',
         r'tibox\.com/s/([a-zA-Z0-9_\-]+)',
         r'terabox\.fun/s/([a-zA-Z0-9_\-]+)',
+        r'teraboxurl\.com/s/([a-zA-Z0-9_\-]+)',
     ]
     
     for pattern in patterns:
@@ -333,6 +336,7 @@ def validate_terabox_link(text: str) -> tuple:
     if not re.search(terabox_pattern, text):
         return False, False, "❌ *This is not a Terabox link!*\n\nPlease send a valid Terabox share link."
     
+    # Check if the domain is supported
     for domain in SUPPORTED_DOMAINS:
         if domain in text:
             return True, True, "✅ Supported Terabox link"
@@ -454,12 +458,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
         
         welcome_text = (
-            "🎬 *Terabox Video Bot - Hidden API Mode*\n\n"
+            "🎬 *Terabox Video Bot*\n\n"
             "Send me any Terabox link and I'll give you a private video player!\n\n"
             "🔒 *Features:*\n"
-            "✅ API endpoints completely hidden\n"
             "✅ Video plays on my domain\n"
-            "✅ No one sees the original API URL\n\n"
             "📤 *Send your Terabox link now:*"
         )
         await update.message.reply_text(welcome_text, parse_mode='Markdown')
@@ -506,20 +508,20 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
             return
         
-        processing_msg = await update.message.reply_text("🎮 Creating hidden video player...")
+        processing_msg = await update.message.reply_text("🎮 Finding Terabox Video For You...")
         
         your_player_url = f"{YOUR_DOMAIN}/html-player/?surl={surl}"
         
         watch_text = (
-            f"✅ *Hidden Video Player Created!*\n\n"
-            f"🔗 *Video ID:* `{surl}`\n"
-            f"🔒 *API Status:* Completely hidden\n\n"
-            f"📱 *Click below to watch video:*\n"
+            f"✅ *Terabox Video Found!* ✅\n\n"
+            f"🔗 *Session ID:* `{surl}`\n"
+            f"🌐 *API Status:* Online 🟢\n\n"
+            f"👇 *Click below to watch video:*\n"
         )
         
         keyboard = [
-            [InlineKeyboardButton("🎬 Watch Video (Secure)", url=your_player_url)],
-            [InlineKeyboardButton("💻 Devloped By Titan👑", url="https://t.me/Titanop24")]
+            [InlineKeyboardButton("🎬 Watch Video", url=your_player_url)],
+            [InlineKeyboardButton("💻 Contact Admin", url="https://t.me/Titanop24")]
         ]
         
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -544,8 +546,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "2️⃣ Wait for video to load\n"
                 "3️⃣ **On Desktop:** Right-click video → Save video as...\n"
                 "4️⃣ **On Mobile:** Tap video → ⋮ menu → Download\n\n"
-                "🔒 *Note:* All videos stream through my hidden player.\n"
-                "Original API URLs are never exposed!"
+                "🔒 *Note:* All videos stream through player.\n"
             )
             await query.message.reply_text(help_text, parse_mode='Markdown')
         
@@ -984,11 +985,12 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 📤 *HOW TO USE*
 ────────────────
 1️⃣ Send any Terabox link
-2️⃣ Bot creates hidden video player
+2️⃣ Bot creates video player
 3️⃣ Click to watch securely
 
 ✅ *Supported Links:*
 • 1024terabox.com/s/...
+• teraboxurl.com/s/...
 • terabox.com/s/...
 • teraboxapp.com/s/...
 • tibox.com/s/...
